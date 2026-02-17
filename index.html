@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>わがまちクエストV24</title>
+    <title>わがまちクエストV27</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -14,78 +14,38 @@
         body { margin: 0; padding: 0; font-family: 'M PLUS Rounded 1c', sans-serif; background: #fafafa; overflow: hidden; }
         .screen { display: none; width: 100%; height: 100vh; position: absolute; top: 0; left: 0; background: #fff; }
         .active-screen { display: block; }
-        
-        /* タイトル等はflex表示 */
         #title-screen.active-screen, #cloud-screen.active-screen { display: flex; }
 
-        /* ローディング */
-        #loading-overlay {
-            display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.9); z-index: 9999;
-            flex-direction: column; align-items: center; justify-content: center;
-        }
-        .spinner {
-            width: 50px; height: 50px; border: 5px solid #ccc; border-top: 5px solid #3498db;
-            border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px;
-        }
+        #loading-overlay { display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; }
+        .spinner { width: 50px; height: 50px; border: 5px solid #ccc; border-top: 5px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* タイトル */
-        #title-screen {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            flex-direction: column; justify-content: center; align-items: center; text-align: center;
-        }
-        h1 { color: #d35400; font-size: 36px; text-shadow: 3px 3px 0px white; margin-bottom: 30px; line-height: 1.2; }
-        .menu-btn {
-            width: 240px; padding: 15px; margin: 10px; font-size: 20px; font-weight: bold; color: white;
-            border: 4px solid white; border-radius: 30px; box-shadow: 0 5px 10px rgba(0,0,0,0.2); cursor: pointer;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3); user-select: none;
-        }
+        #title-screen { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        h1 { color: #d35400; font-size: 36px; text-shadow: 3px 3px 0px white; margin-bottom: 10px; line-height: 1.2; }
+        #title-score-area { font-size: 18px; font-weight: bold; color: #555; margin-bottom: 20px; background: rgba(255,255,255,0.6); padding: 5px 15px; border-radius: 20px; display: none; }
+        .menu-btn { width: 240px; padding: 15px; margin: 10px; font-size: 20px; font-weight: bold; color: white; border: 4px solid white; border-radius: 30px; box-shadow: 0 5px 10px rgba(0,0,0,0.2); cursor: pointer; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); user-select: none; }
         .menu-btn:active { transform: scale(0.95); }
-        .btn-play { background: #ff9f43; padding: 20px; font-size: 24px; }
-        .btn-collection { background: #1dd1a1; }
-        .btn-cloud { background: #9b59b6; }
-        .btn-admin { background: #8395a7; font-size: 16px; margin-top: 30px; }
+        .btn-play { background: #ff9f43; padding: 20px; font-size: 24px; } .btn-collection { background: #1dd1a1; } .btn-cloud { background: #9b59b6; } .btn-admin { background: #8395a7; font-size: 16px; margin-top: 20px; }
+        .btn-reset { font-size: 12px; color: #7f8c8d; text-decoration: underline; margin-top: 15px; cursor: pointer; background: none; border: none; }
 
-        /* ゲーム画面 */
+        /* ゲーム */
         #map { height: 100%; width: 100%; }
         body.mode-editor #map-container { border: 8px solid #FF9800; box-sizing: border-box; }
         body.mode-admin #map-container { border: 8px solid #e74c3c; box-sizing: border-box; }
-        
         .ui-float { position: absolute; z-index: 1000; font-weight: bold; text-shadow: 1px 1px 0 #fff; user-select: none; }
         #back-btn { top: 15px; left: 70px; background: white; padding: 8px 15px; border-radius: 20px; border: 2px solid #ccc; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         #score-board { top: 15px; right: 15px; background: #FFD700; color: #d35400; padding: 8px 15px; border-radius: 20px; border: 3px solid white; box-shadow: 0 3px 5px rgba(0,0,0,0.2); }
-        
-        #jump-btn {
-            position: absolute; bottom: 30px; right: 20px; z-index: 1000; background: white; padding: 10px 20px;
-            border-radius: 30px; border: 2px solid #ccc; display: flex; align-items: center; justify-content: center;
-            font-size: 16px; font-weight: bold; color: #333; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-        #jump-btn:active { background: #eee; transform: scale(0.95); }
+        #jump-btn { position: absolute; bottom: 30px; right: 20px; z-index: 1000; background: white; padding: 10px 20px; border-radius: 30px; border: 2px solid #ccc; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; color: #333; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
         #jump-btn.tracking { background: #e3f2fd; border-color: #2196f3; color: #2196f3; }
+        #checkin-btn { display: none; position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); z-index: 2000; background: #ff5252; color: white; padding: 15px 40px; font-size: 22px; border-radius: 50px; border: 4px solid white; box-shadow: 0 0 15px rgba(255, 0, 0, 0.5); animation: bounce 1s infinite; cursor: pointer; font-weight: bold; }
+        #admin-settings-btn { display: none; position: absolute; top: 70px; right: 15px; z-index: 1000; background: #34495e; color: white; width: 40px; height: 40px; border-radius: 50%; border: 3px solid white; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 3px 5px rgba(0,0,0,0.3); cursor: pointer; }
+        body.mode-admin #admin-settings-btn { display: flex; }
 
-        #checkin-btn {
-            display: none; position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%); z-index: 2000;
-            background: #ff5252; color: white; padding: 15px 40px; font-size: 22px; border-radius: 50px;
-            border: 4px solid white; box-shadow: 0 0 15px rgba(255, 0, 0, 0.5); animation: bounce 1s infinite; cursor: pointer; font-weight: bold;
-        }
-        @keyframes bounce { 0%, 100% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.1); } }
-
-        /* ★ 管理者設定ボタン */
-        #admin-settings-btn {
-            display: none; /* デフォルト非表示 */
-            position: absolute; top: 70px; right: 15px; z-index: 1000;
-            background: #34495e; color: white; width: 40px; height: 40px;
-            border-radius: 50%; border: 3px solid white;
-            align-items: center; justify-content: center; font-size: 20px;
-            box-shadow: 0 3px 5px rgba(0,0,0,0.3); cursor: pointer;
-        }
-        body.mode-admin #admin-settings-btn { display: flex; } /* 管理者のみ表示 */
-
-        /* ずかん画面 */
+        /* ずかん */
         #collection-screen { background: #f0f3f5; overflow-y: auto; }
         #collection-header { background: #1dd1a1; color: white; padding: 15px; text-align: center; font-weight: bold; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .header-score { font-size: 16px; background: rgba(255,255,255,0.2); display: inline-block; padding: 5px 15px; border-radius: 15px; }
+        .header-title { font-size: 22px; margin-bottom: 5px; } .header-score { font-size: 16px; background: rgba(255,255,255,0.2); display: inline-block; padding: 5px 15px; border-radius: 15px; }
         #collection-list { padding: 20px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
         .collection-item { background: white; border-radius: 15px; padding: 10px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 3px 6px rgba(0,0,0,0.1); cursor: pointer; border: 2px solid #fff; }
         .collection-item img { width: 100%; height: 120px; object-fit: cover; border-radius: 10px; background: #eee; margin-bottom: 8px; }
@@ -96,27 +56,25 @@
         #cloud-screen { background: #9b59b6; flex-direction: column; align-items: center; justify-content: center; color: white; overflow-y: auto; min-height: 100vh; }
         .cloud-box { background: white; padding: 20px; border-radius: 20px; width: 85%; max-width: 400px; color: #333; text-align: center; margin: 20px 0; }
         .cloud-input { width: 100%; padding: 10px; margin: 10px 0; border: 2px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        .validation-msg { font-size:11px; color:#e74c3c; text-align:left; margin-bottom:5px; display:block; }
 
-        /* 共通モダル */
+        /* モダル */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; align-items: center; justify-content: center; }
         .modal-box { background: white; padding: 20px; border-radius: 20px; width: 85%; max-width: 400px; text-align: center; border: 5px solid #3498db; max-height: 85vh; overflow-y: auto; position: relative; }
+        .btn { padding: 10px 20px; border-radius: 10px; border: none; font-weight: bold; color: white; margin: 5px; cursor: pointer; }
+        .btn-blue { background: #3498db; } .btn-red { background: #ff5252; } .btn-gray { background: #7f8c8d; } .btn-orange { background: #f39c12; } .btn-green { background: #27ae60; } .btn-purple { background: #8e44ad; }
+        .hint-text { font-size: 11px; color: #d35400; text-align: left; margin-top: -5px; margin-bottom: 10px; }
+        .input-group input, .input-group textarea, .input-group select { width: 100%; padding: 8px; border: 2px solid #ccc; border-radius: 8px; box-sizing: border-box; margin-bottom: 10px; }
         
-        /* カルーセル */
         .carousel-container { position: relative; width: 100%; height: 220px; margin-bottom: 10px; border-radius: 10px; overflow: hidden; background: #ddd; }
         .carousel-img { width: 100%; height: 100%; object-fit: cover; }
-        .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; cursor: pointer; }
+        .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .prev-btn { left: 10px; } .next-btn { right: 10px; }
         .carousel-counter { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; }
-
-        /* パーツ */
         .tags-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin-bottom: 10px; }
         .tag-badge { background: #e3f2fd; color: #1565c0; font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 15px; border: 1px solid #bbdefb; }
         .spot-desc-lg { text-align: left; background: #f9f9f9; padding: 10px; border-radius: 8px; color: #333; margin-bottom: 15px; font-size: 14px; line-height: 1.6; }
-        .input-group label { font-size: 12px; color: #555; display: block; margin-bottom: 4px; text-align: left; }
-        .input-group input, .input-group textarea, .input-group select { width: 100%; padding: 8px; border: 2px solid #ccc; border-radius: 8px; box-sizing: border-box; margin-bottom: 10px; }
-        .btn { padding: 10px 20px; border-radius: 10px; border: none; font-weight: bold; color: white; margin: 5px; cursor: pointer; }
-        .btn-blue { background: #3498db; } .btn-red { background: #ff5252; } .btn-gray { background: #7f8c8d; } .btn-orange { background: #f39c12; } .btn-green { background: #27ae60; }
-        .hint-text { font-size: 11px; color: #d35400; text-align: left; margin-top: -5px; margin-bottom: 10px; }
+        
         .quiz-choice-btn { width: 100%; padding: 15px; margin: 5px 0; background: #fff; border: 2px solid #3498db; color: #3498db; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
         .quiz-choice-btn:active { background: #e3f2fd; } .quiz-choice-btn:disabled { background: #eee; color: #999; border-color: #ccc; }
         .quiz-list-item { background: #eee; padding: 10px; margin-bottom: 5px; border-radius: 8px; text-align: left; font-size: 12px; display: flex; justify-content: space-between; align-items: center; }
@@ -127,15 +85,18 @@
 
     <div id="loading-overlay">
         <div class="spinner"></div>
-        <div id="loading-text">データを読み込んでいます...</div>
+        <div id="loading-text">データを読み込んでいます...<br>（初回は時間がかかります）</div>
     </div>
 
     <div id="title-screen" class="screen active-screen">
         <h1>わがまち<br>クエスト</h1>
+        <div id="title-score-area">現在のスコア：<span id="title-score-val">0</span>pt</div>
+        
         <div class="menu-btn btn-play" onclick="startGame('player')">冒険に出る</div>
         <div class="menu-btn btn-collection" onclick="showCollection()">ずかんを見る</div>
         <div class="menu-btn btn-cloud" onclick="showCloudScreen()">クラウド保存/読込</div>
         <div class="menu-btn btn-admin" onclick="requestAdminLogin()">設定・編集</div>
+        <button class="btn-reset" onclick="resetLocalData()">データ削除（はじめから）</button>
     </div>
 
     <div id="game-screen" class="screen">
@@ -159,11 +120,25 @@
     <div id="cloud-screen" class="screen">
         <div class="cloud-box">
             <h2>クラウド同期</h2>
-            <p>データをサーバーに保存・読み込みます。</p>
-            <input type="email" id="cloud-email" class="cloud-input" placeholder="メールアドレス">
-            <input type="password" id="cloud-pass" class="cloud-input" placeholder="パスワード（自由設定）">
-            <button class="btn btn-orange" onclick="cloudSave()">データを保存する</button>
-            <button class="btn btn-green" onclick="cloudLoad()">データを読み込む</button>
+            <p style="font-size:13px; margin-bottom:15px;">
+                初めての方は「新規登録」を、<br>2回目以降は「保存/読込」をしてください。
+            </p>
+            <div style="text-align:left;">
+                <label style="font-size:12px;">ニックネーム</label>
+                <input type="text" id="cloud-nick" class="cloud-input" placeholder="10文字以内">
+                <span class="validation-msg">※10文字以内</span>
+            </div>
+            <div style="text-align:left;">
+                <label style="font-size:12px;">パスワード</label>
+                <input type="password" id="cloud-pass" class="cloud-input" placeholder="8〜12桁の半角英数字">
+                <span class="validation-msg">※8〜12桁の半角英数字のみ</span>
+            </div>
+            <button class="btn btn-purple" onclick="cloudRegister()">新規登録</button>
+            <div style="display:flex; justify-content:center; gap:5px; margin-top:10px;">
+                <button class="btn btn-orange" onclick="cloudSave()">保存</button>
+                <button class="btn btn-green" onclick="cloudLoad()">読込</button>
+            </div>
+            <button class="btn btn-blue" style="margin-top:15px; font-size:12px;" onclick="openChangeUserPassModal()">パスワード変更</button>
             <hr>
             <button class="btn btn-gray" style="margin-top:10px;" onclick="returnToTitle()">戻る</button>
         </div>
@@ -205,7 +180,7 @@
             <div class="input-group"><label>名前</label><input type="text" id="ed-name"></div>
             <div class="input-group"><label>タグ</label><input type="text" id="ed-tags" placeholder="カンマ区切り"></div>
             <div class="input-group"><label>説明</label><textarea id="ed-desc"></textarea></div>
-            <div class="input-group"><label>写真URL</label><textarea id="ed-imgs" style="height:60px;"></textarea></div>
+            <div class="input-group"><label>写真URL</label><textarea id="ed-imgs" style="height:60px;" placeholder="https://..."></textarea></div>
             <div class="hint-text">※Googleドライブは「リンクを知っている全員」に公開</div>
             <button class="btn btn-green" onclick="openQuizManager()">クイズの管理</button>
             <hr>
@@ -236,31 +211,35 @@
 
     <div id="admin-settings-modal" class="modal-overlay">
         <div class="modal-box" style="border-color:#34495e;">
-            <h3 style="color:#34495e;">パスワード変更</h3>
-            <p style="font-size:12px;">新しいパスワードを入力してください</p>
-            <div class="input-group">
-                <label>管理者パスワード</label>
-                <input type="text" id="new-admin-pass" placeholder="新しい管理者パス">
-            </div>
-            <div class="input-group">
-                <label>編集者パスワード</label>
-                <input type="text" id="new-editor-pass" placeholder="新しい編集者パス">
-            </div>
+            <h3 style="color:#34495e;">管理者設定</h3>
+            <p style="font-size:12px;">管理者・編集者のパスワード変更</p>
+            <div class="input-group"><label>管理者パスワード</label><input type="text" id="new-admin-pass"></div>
+            <div class="input-group"><label>編集者パスワード</label><input type="text" id="new-editor-pass"></div>
             <button class="btn btn-orange" onclick="saveNewPasswords()">変更を保存</button>
-            <hr>
-            <button class="btn btn-gray" onclick="closeModal('admin-settings-modal')">閉じる</button>
+            <hr><button class="btn btn-gray" onclick="closeModal('admin-settings-modal')">閉じる</button>
+        </div>
+    </div>
+
+    <div id="user-pass-modal" class="modal-overlay">
+        <div class="modal-box" style="border-color:#9b59b6;">
+            <h3 style="color:#9b59b6;">パスワード変更</h3>
+            <div class="input-group"><label>ニックネーム</label><input type="text" id="chg-nick" readonly style="background:#eee;"></div>
+            <div class="input-group"><label>現在のパスワード</label><input type="password" id="chg-old-pass"></div>
+            <div class="input-group"><label>新しいパスワード</label><input type="password" id="chg-new-pass" placeholder="8〜12桁の半角英数字"></div>
+            <button class="btn btn-orange" onclick="changeUserPassword()">変更する</button>
+            <hr><button class="btn btn-gray" onclick="closeModal('user-pass-modal')">閉じる</button>
         </div>
     </div>
 
     <script>
-        // ★★★ GAS URL ★★★
+        // ★★★ GAS URL (共有いただいたものを設定済み) ★★★
         const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxCZEaQCgBEthf858OwEC8KGYyRzNfbER7MRnxaCTxXCkvTO2QE-Bsnys6KuMBMCUfC/exec";
 
         // --- 状態管理 ---
         let spots = [];
         let userData = { visitedIds: [], quizHistory: {} };
         let currentRole = 'player';
-        let currentPassword = null; // 管理者ログイン中のパスワード保持用（変更時に使用）
+        let currentPassword = null;
         let map = null, markers = [], userMarker = null, userLat = 0, userLng = 0;
         let isTracking = true, targetSpot = null;
         const CHECKIN_RANGE = 30;
@@ -270,131 +249,125 @@
         let editingSpotQuizzes = [], quizEditingIndex = -1;
         let currentQuizList = [], currentQuizIndex = 0;
 
-        // --- Fetch ---
+        // --- ローカル保存キー ---
+        const LOCAL_SAVE_KEY = 'localSaveData';
+
+        // --- 通信処理 ---
         async function callGasApi(params, isPost = false) {
             const url = isPost ? GAS_API_URL : `${GAS_API_URL}?${new URLSearchParams(params)}`;
             const options = isPost ? { method: 'POST', body: JSON.stringify(params) } : { method: 'GET' };
-            try { return await (await fetch(url, options)).json(); } catch (e) { alert("通信エラー"); return null; }
+            try { return await (await fetch(url, options)).json(); } catch (e) { console.error(e); alert("通信エラー"); return null; }
         }
 
         // --- 起動 ---
         window.onload = async function() {
-            const localData = localStorage.getItem('localSaveData');
-            if(localData) userData = JSON.parse(localData);
-            updateScore();
+            const localData = localStorage.getItem(LOCAL_SAVE_KEY);
+            if(localData) {
+                userData = JSON.parse(localData);
+                updateScore();
+                document.getElementById('title-score-area').style.display = 'block';
+            }
             const res = await callGasApi({ action: 'getAllSpots' });
             if(res) { spots = res; updateScore(); }
             document.getElementById('loading-overlay').style.display = 'none';
         };
+
+        function saveToLocal() {
+            localStorage.setItem(LOCAL_SAVE_KEY, JSON.stringify(userData));
+            updateScore();
+            document.getElementById('title-score-area').style.display = 'block';
+        }
+
+        function resetLocalData() {
+            if(!confirm("本当にデータを削除しますか？\n（クラウドに保存していないデータは消えます）")) return;
+            localStorage.removeItem(LOCAL_SAVE_KEY);
+            userData = { visitedIds: [], quizHistory: {} };
+            updateScore();
+            document.getElementById('title-score-area').style.display = 'none';
+            alert("データを削除しました。");
+        }
 
         function updateScore() {
             let qs = Object.keys(userData.quizHistory).length * 50;
             let ts = (userData.visitedIds.length * 50) + qs;
             document.getElementById('score-val').innerText = ts;
             document.getElementById('collection-score-val').innerText = ts;
+            document.getElementById('title-score-val').innerText = ts;
         }
 
-        // --- クラウド ---
-        async function cloudSave() {
-            const e = document.getElementById('cloud-email').value, p = document.getElementById('cloud-pass').value;
-            if(!e || !p) return alert("入力してください");
+        // --- バリデーション ---
+        function validateInput(nick, pass) {
+            if (!nick || nick.length === 0 || nick.length > 10) { alert("ニックネームは1〜10文字で入力してください"); return false; }
+            const passRegex = /^[a-zA-Z0-9]{8,12}$/;
+            if (!pass || !passRegex.test(pass)) { alert("パスワードは8〜12文字の半角英数字で入力してください"); return false; }
+            return true;
+        }
+
+        // --- クラウド機能 ---
+        async function cloudRegister() {
+            const nick = document.getElementById('cloud-nick').value;
+            const pass = document.getElementById('cloud-pass').value;
+            if (!validateInput(nick, pass)) return;
             showLoading(true);
-            const res = await callGasApi({ action: 'saveUser', email: e, password: p, saveData: userData }, true);
-            showLoading(false); if(res) alert(res.msg);
+            const res = await callGasApi({ action: 'registerUser', nickname: nick, password: pass, saveData: userData }, true);
+            showLoading(false);
+            if(res) alert(res.msg);
+        }
+        async function cloudSave() {
+            const nick = document.getElementById('cloud-nick').value;
+            const pass = document.getElementById('cloud-pass').value;
+            if(!nick || !pass) return alert("入力してください");
+            showLoading(true);
+            const res = await callGasApi({ action: 'saveUserData', nickname: nick, password: pass, saveData: userData }, true);
+            showLoading(false);
+            if(res) alert(res.msg);
         }
         async function cloudLoad() {
-            const e = document.getElementById('cloud-email').value, p = document.getElementById('cloud-pass').value;
-            if(!e || !p) return alert("入力してください");
+            const nick = document.getElementById('cloud-nick').value;
+            const pass = document.getElementById('cloud-pass').value;
+            if(!nick || !pass) return alert("入力してください");
             showLoading(true);
-            const res = await callGasApi({ action: 'loadUser', email: e, password: p });
+            const res = await callGasApi({ action: 'loadUserData', nickname: nick, password: pass }, true);
             showLoading(false);
             if(res && res.success) {
                 if(res.data) userData = res.data;
-                localStorage.setItem('localSaveData', JSON.stringify(userData));
-                updateScore(); alert("読み込み完了"); returnToTitle();
-            } else alert(res?res.msg:"エラー");
+                saveToLocal(); 
+                alert("読み込み完了");
+                returnToTitle();
+            } else alert(res ? res.msg : "エラー");
+        }
+        function openChangeUserPassModal() {
+            const nick = document.getElementById('cloud-nick').value;
+            if(!nick) return alert("ニックネームを入力してから押してください");
+            document.getElementById('chg-nick').value = nick;
+            document.getElementById('chg-old-pass').value = "";
+            document.getElementById('chg-new-pass').value = "";
+            document.getElementById('user-pass-modal').style.display = 'flex';
+        }
+        async function changeUserPassword() {
+            const nick = document.getElementById('chg-nick').value;
+            const oldPass = document.getElementById('chg-old-pass').value;
+            const newPass = document.getElementById('chg-new-pass').value;
+            if(!oldPass) return alert("現在のパスワードを入力してください");
+            const passRegex = /^[a-zA-Z0-9]{8,12}$/;
+            if (!passRegex.test(newPass)) return alert("新しいパスワードは8〜12文字の半角英数字にしてください");
+            showLoading(true);
+            const res = await callGasApi({ action: 'changeUserPassword', nickname: nick, oldPassword: oldPass, newPassword: newPass }, true);
+            showLoading(false);
+            if(res && res.success) { alert(res.msg); closeModal('user-pass-modal'); document.getElementById('cloud-pass').value = newPass; } else alert(res ? res.msg : "エラー");
         }
         function showLoading(b) { document.getElementById('loading-overlay').style.display = b ? 'flex' : 'none'; }
 
-        // --- スポット保存 ---
-        async function saveSpot() {
-            const name = document.getElementById('ed-name').value;
-            if(!name) return alert("名前必須");
-            const newSpot = {
-                id: (editingIndex >= 0) ? spots[editingIndex].id : Date.now(),
-                lat: (editingIndex >= 0) ? spots[editingIndex].lat : parseFloat(document.getElementById('edit-modal').dataset.lat),
-                lng: (editingIndex >= 0) ? spots[editingIndex].lng : parseFloat(document.getElementById('edit-modal').dataset.lng),
-                name: name, desc: document.getElementById('ed-desc').value,
-                images: document.getElementById('ed-imgs').value.split('\n').map(u=>u.trim()).filter(u=>u.length),
-                tags: document.getElementById('ed-tags').value.split(',').map(t=>t.trim()).filter(t=>t.length),
-                quizzes: editingSpotQuizzes, lastUpdated: Date.now()
-            };
-            showLoading(true);
-            const res = await callGasApi({ action: 'saveSpot', spotData: newSpot, isDelete: false }, true);
-            if(res && res.success) { closeModal('edit-modal'); const r = await callGasApi({action:'getAllSpots'}); if(r) spots=r; refreshMarkers(); }
-            showLoading(false); if(res) alert(res.msg);
-        }
-        async function deleteSpot() {
-            if(!confirm("削除しますか？")) return;
-            showLoading(true);
-            const res = await callGasApi({ action: 'saveSpot', spotData: {id: spots[editingIndex].id}, isDelete: true }, true);
-            if(res && res.success) { closeModal('edit-modal'); const r = await callGasApi({action:'getAllSpots'}); if(r) spots=r; refreshMarkers(); }
-            showLoading(false); if(res) alert(res.msg);
-        }
-
-        // --- 画面遷移・認証 ---
+        // --- 画面遷移 ---
         function switchScreen(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active-screen')); document.getElementById(id).classList.add('active-screen'); }
         function returnToTitle() { switchScreen('title-screen'); }
-        function goTitle() { returnToTitle(); }
         function showCloudScreen() { switchScreen('cloud-screen'); }
-        
-        function startGame(role) {
-            currentRole = role; document.body.className = ''; if(role !== 'player') document.body.classList.add('mode-'+role);
-            switchScreen('game-screen'); isTracking = true; updateJumpBtnDesign();
-            if(!map) setTimeout(initMap, 100); else { map.invalidateSize(); refreshMarkers(); if(userLat!==0) map.setView([userLat,userLng], 17); }
-        }
-        
-        // ★ パスワード認証 (サーバー照合)
-        async function requestAdminLogin() {
-            let p = prompt("パスワードを入力してください");
-            if(!p) return;
-            showLoading(true);
-            const res = await callGasApi({ action: 'loginCheck', password: p }, true);
-            showLoading(false);
-            if(res && res.success) {
-                currentPassword = p; // 成功したらパスワードを保持（変更時に使用）
-                startGame(res.role);
-            } else {
-                alert("パスワードが違います");
-            }
-        }
-
-        // ★ 管理者設定 (パスワード変更)
+        function startGame(role) { currentRole = role; document.body.className = ''; if(role !== 'player') document.body.classList.add('mode-'+role); switchScreen('game-screen'); isTracking = true; updateJumpBtnDesign(); if(!map) setTimeout(initMap, 100); else { map.invalidateSize(); refreshMarkers(); if(userLat!==0) map.setView([userLat,userLng], 17); } }
+        async function requestAdminLogin() { let p = prompt("パスワードを入力してください"); if(!p) return; showLoading(true); const res = await callGasApi({ action: 'loginCheck', password: p }, true); showLoading(false); if(res && res.success) { currentPassword = p; startGame(res.role); } else alert("パスワードが違います"); }
         function openAdminSettings() { document.getElementById('admin-settings-modal').style.display = 'flex'; }
-        async function saveNewPasswords() {
-            const na = document.getElementById('new-admin-pass').value;
-            const ne = document.getElementById('new-editor-pass').value;
-            if(!na || !ne) return alert("両方のパスワードを入力してください");
-            
-            showLoading(true);
-            const res = await callGasApi({
-                action: 'changePassword',
-                currentAdminPass: currentPassword, // 本人確認用
-                newAdminPass: na, newEditorPass: ne
-            }, true);
-            showLoading(false);
-            
-            if(res && res.success) {
-                alert("変更しました。新しいパスワードでログインし直してください。");
-                currentPassword = null;
-                closeModal('admin-settings-modal');
-                returnToTitle();
-            } else {
-                alert(res ? res.msg : "エラー");
-            }
-        }
+        async function saveNewPasswords() { const na = document.getElementById('new-admin-pass').value; const ne = document.getElementById('new-editor-pass').value; if(!na || !ne) return alert("入力してください"); showLoading(true); const res = await callGasApi({ action: 'changeAdminPassword', currentAdminPass: currentPassword, newAdminPass: na, newEditorPass: ne }, true); showLoading(false); if(res && res.success) { alert("変更しました。再ログインしてください。"); currentPassword=null; closeModal('admin-settings-modal'); returnToTitle(); } else alert(res?res.msg:"エラー"); }
 
-        // --- マップ・UI ---
+        // --- マップ・GPS ---
         function initMap() {
             map = L.map('map').setView([35.6812, 139.7671], 15);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
@@ -407,133 +380,60 @@
                 document.getElementById('edit-modal').dataset.lat = e.latlng.lat; document.getElementById('edit-modal').dataset.lng = e.latlng.lng;
                 document.getElementById('edit-modal').style.display = 'flex';
             });
+            // GPS強化
+            const geoOptions = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
             navigator.geolocation.watchPosition((pos) => {
-                userLat = pos.coords.latitude; userLng = pos.coords.longitude; userMarker.setLatLng([userLat, userLng]);
-                if(isTracking) map.setView([userLat, userLng], map.getZoom()); checkProximity();
-            }, (e) => console.log(e), { enableHighAccuracy: true });
+                userLat = pos.coords.latitude; userLng = pos.coords.longitude;
+                userMarker.setLatLng([userLat, userLng]);
+                if(isTracking) map.setView([userLat, userLng], map.getZoom());
+                checkProximity();
+            }, (e) => {
+                console.error("GPS Error:", e);
+                // エラーコード1は許可拒否なので、アラートを出すと親切
+                if(e.code === 1) alert("位置情報の利用が許可されていません。設定を確認してください。");
+            }, geoOptions);
             refreshMarkers();
         }
-        function jumpToUser() { if(userLat !== 0) { isTracking = true; updateJumpBtnDesign(); map.setView([userLat, userLng], 17); } else alert("GPS取得中..."); }
+        function jumpToUser() { 
+            if(userLat !== 0) { isTracking = true; updateJumpBtnDesign(); map.setView([userLat, userLng], 17); } 
+            else { 
+                alert("GPSを取得しています...（取得できない場合は、ブラウザの位置情報許可を確認してください）"); 
+                // 再試行
+                navigator.geolocation.getCurrentPosition((pos)=>{
+                    userLat = pos.coords.latitude; userLng = pos.coords.longitude;
+                    userMarker.setLatLng([userLat, userLng]);
+                    isTracking = true; updateJumpBtnDesign(); map.setView([userLat, userLng], 17);
+                }, (e)=>{ alert("GPS取得エラー: " + e.message); }, { enableHighAccuracy: true, timeout: 10000 });
+            } 
+        }
         function updateJumpBtnDesign() { const btn = document.getElementById('jump-btn'); if(isTracking) { btn.classList.add('tracking'); btn.innerText = "現在地 (追尾中)"; } else { btn.classList.remove('tracking'); btn.innerText = "現在地へ"; } }
-
-        function refreshMarkers() {
-            markers.forEach(m => map.removeLayer(m)); markers = [];
-            spots.forEach((spot, index) => {
-                const isVisited = userData.visitedIds.includes(spot.id);
-                var icon = L.divIcon({ className: 's-icon', html: `<div style="background:${isVisited ? '#f1c40f' : '#2ecc71'}; width:30px; height:30px; border-radius:50%; border:3px solid white; display:flex; align-items:center; justify-content:center; font-weight:bold; color:white; box-shadow:0 2px 5px rgba(0,0,0,0.3);">${isVisited ? '★' : '?'}</div>`, iconSize: [36, 36] });
-                var m = L.marker([spot.lat, spot.lng], {icon: icon}).addTo(map);
-                m.on('click', () => { if(currentRole === 'player') { if(isVisited) showDetail(spot, false, index); else L.popup().setLatLng([spot.lat, spot.lng]).setContent(`<b>${spot.name}</b><br>近づいてチェックインしよう！`).openOn(map); } else showDetail(spot, false, index); });
-                markers.push(m);
-            });
-        }
-        function checkProximity() {
-            if(currentRole !== 'player') { document.getElementById('checkin-btn').style.display='none'; return; }
-            let nearestDist = 99999, nearest = null;
-            spots.forEach(spot => { if(userData.visitedIds.includes(spot.id)) return; let d = map.distance([userLat, userLng], [spot.lat, spot.lng]); if(d < nearestDist) { nearestDist = d; nearest = spot; } });
-            const btn = document.getElementById('checkin-btn');
-            if(nearest && nearestDist < CHECKIN_RANGE) { if(btn.style.display !== 'block') { targetSpot = nearest; btn.style.display = 'block'; } } else { btn.style.display = 'none'; targetSpot = null; }
-        }
-        function showCollection() {
-            const list = document.getElementById('collection-list'); list.innerHTML = "";
-            if(userData.visitedIds.length === 0) list.innerHTML = "<p style='grid-column:1/-1;text-align:center;'>まだ何も見つけていません</p>";
-            userData.visitedIds.forEach(vid => {
-                const idx = spots.findIndex(s => s.id === vid);
-                if(idx >= 0) {
-                    const spot = spots[idx]; const div = document.createElement('div'); div.className = 'collection-item'; div.onclick = () => showDetail(spot, false, idx);
-                    let imgUrl = 'https://placehold.co/400x300?text=No+Image'; if(spot.images && spot.images.length) imgUrl = formatImgUrl(spot.images[0]); else if(spot.img) imgUrl = formatImgUrl(spot.img);
-                    div.innerHTML = `<img src="${imgUrl}" referrerpolicy="no-referrer"><div class="item-name">${spot.name}</div>`; list.appendChild(div);
-                }
-            });
-            switchScreen('collection-screen');
-        }
-        function openCheckinModal() {
-            if(!targetSpot) return; userData.visitedIds.push(targetSpot.id); localStorage.setItem('localSaveData', JSON.stringify(userData)); updateScore();
-            const idx = spots.findIndex(s => s.id === targetSpot.id); showDetail(targetSpot, true, idx); document.getElementById('checkin-btn').style.display = 'none'; refreshMarkers();
-        }
+        function refreshMarkers() { markers.forEach(m => map.removeLayer(m)); markers = []; spots.forEach((spot, index) => { const isVisited = userData.visitedIds.includes(spot.id); var icon = L.divIcon({ className: 's-icon', html: `<div style="background:${isVisited ? '#f1c40f' : '#2ecc71'}; width:30px; height:30px; border-radius:50%; border:3px solid white; display:flex; align-items:center; justify-content:center; font-weight:bold; color:white; box-shadow:0 2px 5px rgba(0,0,0,0.3);">${isVisited ? '★' : '?'}</div>`, iconSize: [36, 36] }); var m = L.marker([spot.lat, spot.lng], {icon: icon}).addTo(map); m.on('click', () => { if(currentRole === 'player') { if(isVisited) showDetail(spot, false, index); else L.popup().setLatLng([spot.lat, spot.lng]).setContent(`<b>${spot.name}</b><br>近づいてチェックインしよう！`).openOn(map); } else showDetail(spot, false, index); }); markers.push(m); }); }
+        function checkProximity() { if(currentRole !== 'player') { document.getElementById('checkin-btn').style.display='none'; return; } let nearestDist = 99999, nearest = null; spots.forEach(spot => { if(userData.visitedIds.includes(spot.id)) return; let d = map.distance([userLat, userLng], [spot.lat, spot.lng]); if(d < nearestDist) { nearestDist = d; nearest = spot; } }); const btn = document.getElementById('checkin-btn'); if(nearest && nearestDist < CHECKIN_RANGE) { if(btn.style.display !== 'block') { targetSpot = nearest; btn.style.display = 'block'; } } else { btn.style.display = 'none'; targetSpot = null; } }
+        function showCollection() { const list = document.getElementById('collection-list'); list.innerHTML = ""; if(userData.visitedIds.length === 0) list.innerHTML = "<p style='grid-column:1/-1;text-align:center;'>まだ何も見つけていません</p>"; userData.visitedIds.forEach(vid => { const idx = spots.findIndex(s => s.id === vid); if(idx >= 0) { const spot = spots[idx]; const div = document.createElement('div'); div.className = 'collection-item'; div.onclick = () => showDetail(spot, false, idx); let imgUrl = 'https://placehold.co/400x300?text=No+Image'; if(spot.images && spot.images.length) imgUrl = formatImgUrl(spot.images[0]); else if(spot.img) imgUrl = formatImgUrl(spot.img); div.innerHTML = `<img src="${imgUrl}" referrerpolicy="no-referrer"><div class="item-name">${spot.name}</div>`; list.appendChild(div); } }); switchScreen('collection-screen'); }
+        function openCheckinModal() { if(!targetSpot) return; userData.visitedIds.push(targetSpot.id); saveToLocal(); const idx = spots.findIndex(s => s.id === targetSpot.id); showDetail(targetSpot, true, idx); document.getElementById('checkin-btn').style.display = 'none'; refreshMarkers(); }
         function formatImgUrl(url) { if (!url) return ""; let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/); if (!match) match = url.match(/[?&]id=([a-zA-Z0-9_-]+)/); if (match && match[1]) return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`; return url; }
         
-        function showDetail(spot, isReward, index) {
-            viewingSpotIndex = index; document.getElementById('det-title').innerText = spot.name; document.getElementById('det-desc').innerText = spot.desc || "";
-            const tagsDiv = document.getElementById('det-tags'); tagsDiv.innerHTML = "";
-            if(spot.tags) spot.tags.forEach(t => { const s = document.createElement('span'); s.className='tag-badge'; s.innerText=t; tagsDiv.appendChild(s); });
-            currentSpotImages = (spot.images && spot.images.length) ? spot.images : (spot.img?[spot.img]:['https://placehold.co/400x300?text=No+Image']); currentImgIndex = 0; updateCarousel();
-            document.getElementById('reward-msg').style.display = isReward ? 'block' : 'none'; document.getElementById('detail-box-border').style.borderColor = isReward ? '#ff5252' : '#3498db';
-            const quizBtn = document.getElementById('btn-challenge-quiz');
-            if(spot.quizzes && spot.quizzes.length > 0) {
-                const lastUpdated = spot.lastUpdated || 0; const clearedTime = userData.quizHistory[spot.id] || -1;
-                if(lastUpdated > clearedTime) { quizBtn.innerText = "Q. クイズに挑戦！"; quizBtn.className = "btn btn-green"; } else { quizBtn.innerText = "★ クイズクリア済み"; quizBtn.className = "btn btn-gray"; }
-                quizBtn.style.display = 'inline-block';
-            } else quizBtn.style.display = 'none';
-            document.getElementById('btn-edit-spot').style.display = (currentRole !== 'player') ? 'inline-block' : 'none';
-            document.getElementById('detail-modal').style.display = 'flex';
-        }
-        function updateCarousel() {
-            document.getElementById('det-img').src = formatImgUrl(currentSpotImages[currentImgIndex]); document.getElementById('det-img-count').innerText = `${currentImgIndex+1}/${currentSpotImages.length}`;
-            const disp = currentSpotImages.length <= 1 ? 'none' : 'flex'; document.querySelector('.prev-btn').style.display = disp; document.querySelector('.next-btn').style.display = disp; document.getElementById('det-img-count').style.display = currentSpotImages.length <= 1 ? 'none' : 'block';
-        }
+        async function saveSpot() { const name = document.getElementById('ed-name').value; if(!name) return alert("名前必須"); const newSpot = { id: (editingIndex >= 0) ? spots[editingIndex].id : Date.now(), lat: (editingIndex >= 0) ? spots[editingIndex].lat : parseFloat(document.getElementById('edit-modal').dataset.lat), lng: (editingIndex >= 0) ? spots[editingIndex].lng : parseFloat(document.getElementById('edit-modal').dataset.lng), name: name, desc: document.getElementById('ed-desc').value, images: document.getElementById('ed-imgs').value.split('\n').map(u=>u.trim()).filter(u=>u.length), tags: document.getElementById('ed-tags').value.split(',').map(t=>t.trim()).filter(t=>t.length), quizzes: editingSpotQuizzes, lastUpdated: Date.now() }; showLoading(true); const res = await callGasApi({ action: 'saveSpot', spotData: newSpot, isDelete: false }, true); if(res && res.success) { closeModal('edit-modal'); const r = await callGasApi({action:'getAllSpots'}); if(r) spots=r; refreshMarkers(); } showLoading(false); if(res) alert(res.msg); }
+        async function deleteSpot() { if(!confirm("削除しますか？")) return; showLoading(true); const res = await callGasApi({ action: 'saveSpot', spotData: {id: spots[editingIndex].id}, isDelete: true }, true); if(res && res.success) { closeModal('edit-modal'); const r = await callGasApi({action:'getAllSpots'}); if(r) spots=r; refreshMarkers(); } showLoading(false); if(res) alert(res.msg); }
+
+        function showDetail(spot, isReward, index) { viewingSpotIndex = index; document.getElementById('det-title').innerText = spot.name; document.getElementById('det-desc').innerText = spot.desc || ""; const tagsDiv = document.getElementById('det-tags'); tagsDiv.innerHTML = ""; if(spot.tags) spot.tags.forEach(t => { const s = document.createElement('span'); s.className='tag-badge'; s.innerText=t; tagsDiv.appendChild(s); }); currentSpotImages = (spot.images && spot.images.length) ? spot.images : (spot.img?[spot.img]:['https://placehold.co/400x300?text=No+Image']); currentImgIndex = 0; updateCarousel(); document.getElementById('reward-msg').style.display = isReward ? 'block' : 'none'; document.getElementById('detail-box-border').style.borderColor = isReward ? '#ff5252' : '#3498db'; const quizBtn = document.getElementById('btn-challenge-quiz'); if(spot.quizzes && spot.quizzes.length > 0) { const lastUpdated = spot.lastUpdated || 0; const clearedTime = userData.quizHistory[spot.id] || -1; if(lastUpdated > clearedTime) { quizBtn.innerText = "Q. クイズに挑戦！"; quizBtn.className = "btn btn-green"; } else { quizBtn.innerText = "★ クイズクリア済み"; quizBtn.className = "btn btn-gray"; } quizBtn.style.display = 'inline-block'; } else quizBtn.style.display = 'none'; document.getElementById('btn-edit-spot').style.display = (currentRole !== 'player') ? 'inline-block' : 'none'; document.getElementById('detail-modal').style.display = 'flex'; }
+        function updateCarousel() { document.getElementById('det-img').src = formatImgUrl(currentSpotImages[currentImgIndex]); document.getElementById('det-img-count').innerText = `${currentImgIndex+1}/${currentSpotImages.length}`; const disp = currentSpotImages.length <= 1 ? 'none' : 'flex'; document.querySelector('.prev-btn').style.display = disp; document.querySelector('.next-btn').style.display = disp; document.getElementById('det-img-count').style.display = currentSpotImages.length <= 1 ? 'none' : 'block'; }
         function changeSlide(d) { currentImgIndex = (currentImgIndex + d + currentSpotImages.length) % currentSpotImages.length; updateCarousel(); }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        
         function triggerEditFromDetail() { closeModal('detail-modal'); openEdit(viewingSpotIndex); }
-        function openEdit(index) {
-            editingIndex = index; const s = spots[index];
-            document.getElementById('ed-name').value = s.name; document.getElementById('ed-desc').value = s.desc||"";
-            document.getElementById('ed-imgs').value = (s.images||(s.img?[s.img]:[])).join("\n");
-            document.getElementById('ed-tags').value = (s.tags||[]).join(", ");
-            editingSpotQuizzes = s.quizzes ? JSON.parse(JSON.stringify(s.quizzes)) : [];
-            const canDelete = (currentRole !== 'player'); document.getElementById('del-btn').style.display = canDelete ? 'inline-block' : 'none';
-            document.getElementById('edit-modal').style.display = 'flex';
-        }
-        
-        // クイズ
+        function openEdit(index) { editingIndex = index; const s = spots[index]; document.getElementById('ed-name').value = s.name; document.getElementById('ed-desc').value = s.desc||""; document.getElementById('ed-imgs').value = (s.images||(s.img?[s.img]:[])).join("\n"); document.getElementById('ed-tags').value = (s.tags||[]).join(", "); editingSpotQuizzes = s.quizzes ? JSON.parse(JSON.stringify(s.quizzes)) : []; const canDelete = (currentRole !== 'player'); document.getElementById('del-btn').style.display = canDelete ? 'inline-block' : 'none'; document.getElementById('edit-modal').style.display = 'flex'; }
         function startQuiz() { if(viewingSpotIndex < 0) return; const spot = spots[viewingSpotIndex]; if(!spot.quizzes || !spot.quizzes.length) return; currentQuizList = spot.quizzes; currentQuizIndex = 0; closeModal('detail-modal'); showQuizQuestion(); document.getElementById('quiz-play-modal').style.display = 'flex'; }
-        function showQuizQuestion() {
-            const quiz = currentQuizList[currentQuizIndex]; document.getElementById('qp-question').innerText = `Q${currentQuizIndex+1}. ${quiz.question}`;
-            const choicesDiv = document.getElementById('qp-choices'); choicesDiv.innerHTML = "";
-            document.getElementById('qp-result').style.display = 'none'; document.getElementById('qp-next-btn').style.display = 'none'; document.getElementById('qp-retry-btn').style.display = 'none'; document.getElementById('qp-close-btn').style.display = 'none';
-            quiz.options.forEach((opt, idx) => { const btn = document.createElement('button'); btn.className = 'quiz-choice-btn'; btn.innerText = opt; btn.onclick = () => answerQuiz(idx); choicesDiv.appendChild(btn); });
-        }
-        function answerQuiz(idx) {
-            const quiz = currentQuizList[currentQuizIndex]; const resDiv = document.getElementById('qp-result'); resDiv.style.display = 'block'; document.querySelectorAll('.quiz-choice-btn').forEach(b => b.disabled = true);
-            if(parseInt(idx) === parseInt(quiz.correct)) { resDiv.innerHTML = "<span style='color:red;'>正解！</span>"; if(currentQuizIndex < currentQuizList.length - 1) document.getElementById('qp-next-btn').style.display = 'inline-block'; else document.getElementById('qp-close-btn').style.display = 'inline-block'; }
-            else { resDiv.innerHTML = `<span style='color:blue;'>残念...正解は「${quiz.options[quiz.correct]}」でした。</span>`; document.getElementById('qp-retry-btn').style.display = 'inline-block'; }
-        }
+        function showQuizQuestion() { const quiz = currentQuizList[currentQuizIndex]; document.getElementById('qp-question').innerText = `Q${currentQuizIndex+1}. ${quiz.question}`; const choicesDiv = document.getElementById('qp-choices'); choicesDiv.innerHTML = ""; document.getElementById('qp-result').style.display = 'none'; document.getElementById('qp-next-btn').style.display = 'none'; document.getElementById('qp-retry-btn').style.display = 'none'; document.getElementById('qp-close-btn').style.display = 'none'; quiz.options.forEach((opt, idx) => { const btn = document.createElement('button'); btn.className = 'quiz-choice-btn'; btn.innerText = opt; btn.onclick = () => answerQuiz(idx); choicesDiv.appendChild(btn); }); }
+        function answerQuiz(idx) { const quiz = currentQuizList[currentQuizIndex]; const resDiv = document.getElementById('qp-result'); resDiv.style.display = 'block'; document.querySelectorAll('.quiz-choice-btn').forEach(b => b.disabled = true); if(parseInt(idx) === parseInt(quiz.correct)) { resDiv.innerHTML = "<span style='color:red;'>正解！</span>"; if(currentQuizIndex < currentQuizList.length - 1) document.getElementById('qp-next-btn').style.display = 'inline-block'; else document.getElementById('qp-close-btn').style.display = 'inline-block'; } else { resDiv.innerHTML = `<span style='color:blue;'>残念...正解は「${quiz.options[quiz.correct]}」でした。</span>`; document.getElementById('qp-retry-btn').style.display = 'inline-block'; } }
         function nextQuiz() { currentQuizIndex++; showQuizQuestion(); }
         function retryQuiz() { showQuizQuestion(); }
-        function finishQuiz() {
-            closeModal('quiz-play-modal'); const spot = spots[viewingSpotIndex]; const lastUpdated = spot.lastUpdated || 0; const clearedTime = userData.quizHistory[spot.id] || -1;
-            if(lastUpdated > clearedTime) { alert("クイズクリア！ +50pt！"); userData.quizHistory[spot.id] = Date.now(); localStorage.setItem('localSaveData', JSON.stringify(userData)); updateScore(); }
-            showDetail(spot, false, viewingSpotIndex);
-        }
-
-        // クイズ編集UI
+        function finishQuiz() { closeModal('quiz-play-modal'); const spot = spots[viewingSpotIndex]; const lastUpdated = spot.lastUpdated || 0; const clearedTime = userData.quizHistory[spot.id] || -1; if(lastUpdated > clearedTime) { alert("クイズクリア！ +50pt！"); userData.quizHistory[spot.id] = Date.now(); saveToLocal(); } showDetail(spot, false, viewingSpotIndex); }
         function openQuizManager() { document.getElementById('edit-modal').style.display = 'none'; document.getElementById('quiz-manager-modal').style.display = 'flex'; resetQuizForm(); renderQuizList(); }
         function closeQuizManager() { document.getElementById('quiz-manager-modal').style.display = 'none'; document.getElementById('edit-modal').style.display = 'flex'; }
-        function renderQuizList() {
-            const list = document.getElementById('qm-list'); list.innerHTML = "";
-            if(editingSpotQuizzes.length===0) list.innerHTML="<div style='padding:10px;'>なし</div>";
-            editingSpotQuizzes.forEach((q,i)=>{
-                const div = document.createElement('div'); div.className='quiz-list-item'; div.innerHTML = `<span>Q${i+1}</span>`;
-                const editBtn = document.createElement('button'); editBtn.className='quiz-action-btn'; editBtn.innerText="編集"; editBtn.style.background="#f39c12"; editBtn.onclick=()=>editQuiz(i);
-                const delBtn = document.createElement('button'); delBtn.className='quiz-action-btn'; delBtn.innerText="削除"; delBtn.style.background="#ff5252"; delBtn.onclick=()=>{ editingSpotQuizzes.splice(i,1); renderQuizList(); if(quizEditingIndex===i) resetQuizForm(); };
-                div.appendChild(editBtn); div.appendChild(delBtn); list.appendChild(div);
-            });
-        }
-        function editQuiz(i) {
-            quizEditingIndex=i; const q=editingSpotQuizzes[i]; document.getElementById('qm-q').value=q.question; document.getElementById('qm-a1').value=q.options[0]; document.getElementById('qm-a2').value=q.options[1]; document.getElementById('qm-a3').value=q.options[2]; document.getElementById('qm-correct').value=q.correct;
-            document.getElementById('qm-add-btn').innerText="更新"; document.getElementById('qm-cancel-btn').style.display='inline-block';
-        }
-        function addOrUpdateQuiz() {
-            const q=document.getElementById('qm-q').value, a1=document.getElementById('qm-a1').value, a2=document.getElementById('qm-a2').value, a3=document.getElementById('qm-a3').value, c=document.getElementById('qm-correct').value;
-            if(!q||!a1||!a2||!a3) return alert("入力してください");
-            const data = { question:q, options:[a1,a2,a3], correct:parseInt(c) };
-            if(quizEditingIndex>=0) editingSpotQuizzes[quizEditingIndex]=data; else editingSpotQuizzes.push(data);
-            resetQuizForm(); renderQuizList();
-        }
-        function resetQuizForm() {
-            quizEditingIndex=-1; document.getElementById('qm-q').value=""; document.getElementById('qm-a1').value=""; document.getElementById('qm-a2').value=""; document.getElementById('qm-a3').value=""; document.getElementById('qm-correct').value="0";
-            document.getElementById('qm-add-btn').innerText="追加"; document.getElementById('qm-cancel-btn').style.display='none';
-        }
+        function renderQuizList() { const list = document.getElementById('qm-list'); list.innerHTML = ""; if(editingSpotQuizzes.length===0) list.innerHTML="<div style='padding:10px;'>なし</div>"; editingSpotQuizzes.forEach((q,i)=>{ const div = document.createElement('div'); div.className='quiz-list-item'; div.innerHTML = `<span>Q${i+1}</span>`; const editBtn = document.createElement('button'); editBtn.className='quiz-action-btn'; editBtn.innerText="編集"; editBtn.style.background="#f39c12"; editBtn.onclick=()=>editQuiz(i); const delBtn = document.createElement('button'); delBtn.className='quiz-action-btn'; delBtn.innerText="削除"; delBtn.style.background="#ff5252"; delBtn.onclick=()=>{ editingSpotQuizzes.splice(i,1); renderQuizList(); if(quizEditingIndex===i) resetQuizForm(); }; div.appendChild(editBtn); div.appendChild(delBtn); list.appendChild(div); }); }
+        function editQuiz(i) { quizEditingIndex=i; const q=editingSpotQuizzes[i]; document.getElementById('qm-q').value=q.question; document.getElementById('qm-a1').value=q.options[0]; document.getElementById('qm-a2').value=q.options[1]; document.getElementById('qm-a3').value=q.options[2]; document.getElementById('qm-correct').value=q.correct; document.getElementById('qm-add-btn').innerText="更新"; document.getElementById('qm-cancel-btn').style.display='inline-block'; }
+        function addOrUpdateQuiz() { const q=document.getElementById('qm-q').value, a1=document.getElementById('qm-a1').value, a2=document.getElementById('qm-a2').value, a3=document.getElementById('qm-a3').value, c=document.getElementById('qm-correct').value; if(!q||!a1||!a2||!a3) return alert("入力してください"); const data = { question:q, options:[a1,a2,a3], correct:parseInt(c) }; if(quizEditingIndex>=0) editingSpotQuizzes[quizEditingIndex]=data; else editingSpotQuizzes.push(data); resetQuizForm(); renderQuizList(); }
+        function resetQuizForm() { quizEditingIndex=-1; document.getElementById('qm-q').value=""; document.getElementById('qm-a1').value=""; document.getElementById('qm-a2').value=""; document.getElementById('qm-a3').value=""; document.getElementById('qm-correct').value="0"; document.getElementById('qm-add-btn').innerText="追加"; document.getElementById('qm-cancel-btn').style.display='none'; }
     </script>
 </body>
 </html>
